@@ -37,7 +37,6 @@ Route::get('/logout', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::domain(config('app.url'))->group(function () {
 
         Route::get('download', 'DashboardController@download');
         Route::post('address/update', 'purchase\SupplierController@updateAddress');
@@ -64,5 +63,4 @@ Route::middleware(['auth'])->group(function () {
 
         });
 
-    });
 });
