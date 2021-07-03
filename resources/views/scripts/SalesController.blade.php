@@ -1,0 +1,332 @@
+<script>
+    /**
+ * Created by rifat on 8/27/17.
+ */
+var convertion_rate;
+var clicked_ruined_type = '';
+var clicked_ruind_from = '';
+var purse = {};
+var unitId = '';
+var unitName = '';
+var purses = [];
+
+function checkQuantityForAdd(product_id) {
+    var quantity=0;
+    for (var i=0;i<purses.length;i++){
+        if(purses[i].product.productId==product_id)
+            quantity+=parseFloat(purses[i].quantity);
+    }
+    return quantity;
+};
+
+$(document).ready(function () {
+
+
+                var formdata = new FormData();
+                formdata.append("_token", $('meta[name="csrf-token"]').attr('content'));
+                $.ajax({
+                    url: '{{route('stock.sales.getProducts')}}',
+                    type: "POST",
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $('#product').html('');
+                        $('<option ></option>').val('').text('{{trans('main.select one')}}').appendTo('#product');
+                        $.each(data, function (i, item) {
+                            $('<option  data-cost="' + item.cost + '" data-quantity="' + item.quantity + '"></option>').val(item.id).text(item.lang_name).appendTo('#product');
+                      })
+                    },
+                    error: function (data) {
+                        if (data['status'] == 422) {
+                            toastr.error('there is no items in list')
+                        }
+                    },
+                });
+
+
+
+    $("#quantity").on('keyup', function (e) {
+        //console.log("Change");
+        $("#grossPrice").val(($("#quantity").val() * $("#unitPrice").val()).toFixed(2));
+        $("#child_unit_price").val(($("#unitPrice").val() / convertion_rate).toFixed(2));
+    });
+
+    /**
+     * Product dropdown on change Action
+     */
+    $("#product").on('change', function (e) {
+        var productId = $("#product").val()
+
+        //unit price is fixed to cost of recioes if has recipe
+        var selected = $(this).find('option:selected');
+        $("#cost").val($("#product option:selected").data('cost'));
+
+        $.get('{{url('stock/get-unit-of-product')}}/' + productId, function (data) {
+            // console.log(data);
+            $("#unit").text(data.unit.unit);
+
+            unitId = data.unit.id;
+            unitName = data.unit.unit;
+        });
+
+        var formdata = new FormData();
+        formdata.append("_token", $('meta[name="csrf-token"]').attr('content'));
+        formdata.append("type",clicked_ruined_type );
+        formdata.append("id",clicked_ruind_from );
+
+        $.ajax({
+            url: '{{url('stock/sales/get-product-quantity/')}}/'+$(this).val(),
+            type: "POST",
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log(data);
+                var quantityassigned=parseFloat(data)-checkQuantityForAdd(productId);
+
+                if (parseFloat(quantityassigned) >= 0) {
+                    $('#quantity').prop("max", quantityassigned);
+
+                }else{
+                    toastr.error('There is no items to make it ruined!')
+
+                }
+                // $('#quantity').prop("max", parseFloat(data[1]));
+            },
+            error: function (data) {
+                if (data['status'] == 422) {
+                    toastr.error('There is error of getting max quantities!')
+                }
+            },
+        });
+
+    });
+
+    /**
+     * Action on save purses button click
+     */
+    $("#savePurses").on('click', function (e) {
+        if (purses.length != 0) {
+            //console.log("You can go on")
+        } else {
+            //console.log("You cannot go on")
+        }
+    });
+
+    /**
+     * Purses Form Submit
+     * @type {*}
+     */
+    var form = $("#purses");
+    form.on('submit', function (e) {
+        e.preventDefault();
+
+         if ( !form[0].checkValidity()){
+            form[0].reportValidity();
+
+        }else{
+        purse = {
+            product: {
+                productId: $("#product").val(),
+                productName: $("#product option:selected").text(),
+                vat:  $("#vat").val(),
+                quantityAvailable: $("#product option:selected").data('quantity'),
+            },
+            quantity: $("#quantity").val(),
+            unit_cost: $("#cost").val(),
+            note: $("#note").val(),
+            unit: {
+                unitId: unitId,
+                unitName: unitName,
+            },
+        }
+
+        //push purse object to purses array
+        purses.push(purse);
+
+        //Call render function to render purses list
+        $("#pursesDetailsRender").empty();
+        $(this).renderHtml(purses);
+
+        //Set default value of all field except supplier in to form
+        $("#product").val('');
+        $("#quantity").val(0);
+        $("#note").val('');
+        $("#cost").val('');
+        }
+    });
+
+    /**
+     * Render Purses List
+     * @param data
+     */
+    $.fn.renderHtml = function (data) {
+        // Final Total Cost
+        var total = 0;
+        var totalvat = 0;
+        $.each(data, function (index, data) {
+            // total += (data.unit.unitPrice * data.quantity) + (data.unit.unitPrice * data.quantity) * (data.product.vat / 100);
+            // totalvat += (data.unit.unitPrice * data.quantity) * (data.product.vat / 100);
+
+            $("#pursesDetailsRender").append(
+                $("<tr>").append(
+                    $("<th>", {text: index + 1}),
+                    $("<td>", {text: data.product.productName}),
+                    $("<td>").append(
+                        $("<input/>", {
+                            value: data.quantity,
+                            class: 'form-control',
+                            type: 'number',
+                            onChange: '$(this).updateQuantity(' + index + ')'
+                        })
+                    ),
+                    $("<td>", {text: data.unit_cost}),
+
+                    $("<td>").append(
+                        $("<div>", {class: 'btn-group'}).append(
+                            $("<button>", {
+                                text:'delete',
+                                class: 'btn btn-danger btn-sm',
+                                onClick: '$(this).deleteFromList(' + index + ')'
+                            })
+                        )
+                    )
+                )
+            )
+        });
+        // Render bottom of purses list with sum of total cost, payment and others
+        if (purses.length != 0) {
+            $("#pursesDetailsRender").append(
+                $("<tr>").append(
+                    $("<th>", {colspan: 3}),
+                    $("<th>", {text: "scan image:", class: "text-right"}),
+                    $("<th>", {
+                        html: '<form id="imgform" name="imgform" enctype="multipart/form-data">' +
+                            '<input class="filestyle" type="file" name="img" id="img"></form> ',
+                    })
+                ),
+                $("<tr>").append(
+                    $("<th>", {colspan: 4}),
+                    $("<th>").append(
+                        $("<button>", {
+                            text: "{{ trans('main.Confirm Order') }}  ",
+                            class: "btn btn-primary",
+                            onClick: '$(this).confirmPurses()'
+                        })
+                    )
+                )
+            )
+            $('#img').filestyle({
+                badge: true,
+                input : false,
+                btnClass : 'btn-primary',
+                htmlIcon : '<span class="oi oi-folder"></span> '
+            });
+        }
+    };
+
+    /**
+     * Delete purses form purses list
+     * @param index
+     */
+    $.fn.deleteFromList = function (index) {
+        purses.splice(index, 1);
+        $("#pursesDetailsRender").empty();
+        $(this).renderHtml(purses);
+    };
+
+    /**
+     * Update quantity of purses list
+     * @param index
+     */
+    $.fn.updateQuantity = function (index) {
+        var quantityassigned=this.checkQuantityForUpdate(index);
+
+        //quantity from available - added to ruined products except this  item  - new quantity
+        quantityassigned=parseFloat( purses[index].product.quantityAvailable)
+            -parseFloat(quantityassigned) -parseFloat(this.val());
+
+        if(quantityassigned >=0){
+            purses[index].quantity = this.val();
+            $("#pursesDetailsRender").empty();
+            $(this).renderHtml(purses);
+
+            var quantityassignedd=purses[index].product.quantityAvailable-checkQuantityForAdd(purses[index].product.productId);
+            $('#quantity').prop("max", quantityassignedd);
+        }else {
+            this.val(purses[index].quantity);
+
+            toastr.error('quantity not enough!')
+
+        }
+    };
+
+    $.fn.checkQuantityForUpdate = function (index) {
+
+        var quantity=0;
+        for (var i=0;i<purses.length;i++){
+            if(purses[i].product.productId==purses[index].product.productId && i!=index)
+                quantity+=parseFloat(purses[i].quantity);
+        }
+        // console.log(quantity);
+
+        return quantity;
+    };
+
+    /**
+     * Calculate due after pay
+     * @param total
+     */
+    $.fn.confirmPurses = function () {
+
+        var formdata = new FormData();
+        var json_arr = JSON.stringify(purses);
+// console.log(purses)
+
+        if ($('#img').prop('files').length > 0) {
+            var file = $('#img').prop('files')[0];
+            formdata.append("image", file);
+
+        }
+
+
+        formdata.append("_token", $('meta[name="csrf-token"]').attr('content'));
+        formdata.append("purses", json_arr);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: '{{route('stock.sales.store')}}',
+            type: "post",
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                // console.log(data);
+                toastr.success('Success ! Purses Has been completed successfully')
+
+                purses = [];
+                $("#pursesDetailsRender").empty();
+                $(this).renderHtml(purses);
+                document.location.href = '{{route('stock.sales.index')}}';
+
+            },
+            error: function (data) {
+                if (data['status'] == 422) {
+                    // console.log(data);
+                    toastr.error('Some thing went wrong!')
+                    purses = [];
+                    $(this).renderHtml(purses);
+                }
+
+            },
+        });
+
+
+    }
+
+});
+</script>

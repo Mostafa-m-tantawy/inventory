@@ -1,0 +1,364 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "L5 Swagger API",
+        "description": "L5 Swagger API description",
+        "contact": {
+            "email": "your-email@domain.com"
+        },
+        "version": "1.0.0"
+    },
+    "host": "center.div",
+    "basePath": "",
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/api/client": {
+            "get": {
+                "description": "Client List",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "description": "status true or false",
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "description": "message",
+                                    "type": "string"
+                                },
+                                "clients": {
+                                    "$ref": "#/definitions/ClientList"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "422": {
+                        "description": "Missing Data"
+                    }
+                }
+            }
+        },
+        "/api/pos/halls": {
+            "get": {
+                "tags": [
+                    "POS Hall"
+                ],
+                "description": "POS Halls",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "description": "status true or false",
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "description": "message",
+                                    "type": "string"
+                                },
+                                "halls": {
+                                    "$ref": "#/definitions/hallList"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "422": {
+                        "description": "Missing Data"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/orders": {
+            "get": {
+                "description": "Order List",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "From date",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "To date",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "description": "status true or false",
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "description": "message",
+                                    "type": "string"
+                                },
+                                "from": {
+                                    "description": "From Date",
+                                    "type": "string"
+                                },
+                                "to": {
+                                    "description": "To Date",
+                                    "type": "string"
+                                },
+                                "orders": {
+                                    "$ref": "#/definitions/orderList"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "422": {
+                        "description": "Missing Data"
+                    }
+                }
+            }
+        },
+        "/api/life-kitchen": {
+            "get": {
+                "description": "LifeKitchen",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "description": "status true or false",
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "description": "message",
+                                    "type": "string"
+                                },
+                                "orders": {
+                                    "$ref": "#/definitions/LifeKitchenordersList"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "422": {
+                        "description": "Missing Data"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ClientList": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "name",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Email",
+                    "type": "string"
+                },
+                "phone1": {
+                    "description": "phone1",
+                    "type": "string"
+                },
+                "national_id": {
+                    "description": "national_id",
+                    "type": "string"
+                },
+                "address": {
+                    "description": "address",
+                    "type": "string"
+                }
+            }
+        },
+        "hallList": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "name",
+                    "type": "string"
+                },
+                "tables": {
+                    "type": "object",
+                    "$ref": "#/definitions/TableList"
+                }
+            }
+        },
+        "TableList": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Table name",
+                    "type": "string"
+                },
+                "occupied": {
+                    "description": "Table occupied",
+                    "type": "boolean"
+                }
+            }
+        },
+        "orderList": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "subTotal": {
+                    "description": "sub total",
+                    "type": "number"
+                },
+                "grossTotal": {
+                    "description": "gross total",
+                    "type": "number"
+                },
+                "type": {
+                    "description": "Order type",
+                    "type": "string"
+                },
+                "paid": {
+                    "description": "paid",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "status",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "2020-08-02 14:34:00",
+                    "type": "string"
+                }
+            }
+        },
+        "LifeKitchenordersList": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "OrderTables": {
+                    "type": "object",
+                    "$ref": "#/definitions/LifeKitchenOrderTables"
+                },
+                "OrderDetails": {
+                    "type": "object",
+                    "$ref": "#/definitions/LifeKitchenOrderDetails"
+                }
+            }
+        },
+        "LifeKitchenOrderTables": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Table name",
+                    "type": "string"
+                }
+            }
+        },
+        "LifeKitchenOrderDetails": {
+            "properties": {
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
+                "dishName": {
+                    "description": "sub total",
+                    "type": "number"
+                },
+                "dishSizeName": {
+                    "description": "gross total",
+                    "type": "number"
+                },
+                "quantity": {
+                    "description": "quantity",
+                    "type": "number"
+                },
+                "note": {
+                    "description": "note",
+                    "type": "string"
+                },
+                "sides": {
+                    "type": "object",
+                    "$ref": "#/definitions/LifeKitchenSides"
+                },
+                "extras": {
+                    "type": "object",
+                    "$ref": "#/definitions/LifeKitchenExtras"
+                }
+            }
+        },
+        "LifeKitchenSides": {
+            "properties": {
+                "dishName": {
+                    "description": "sub total",
+                    "type": "number"
+                },
+                "dishSizeName": {
+                    "description": "Dish Size Name",
+                    "type": "number"
+                },
+                "quantity": {
+                    "description": "quantity",
+                    "type": "number"
+                }
+            }
+        },
+        "LifeKitchenExtras": {
+            "properties": {
+                "dishName": {
+                    "description": "sub total",
+                    "type": "number"
+                },
+                "dishSizeName": {
+                    "description": "Dish Size Name",
+                    "type": "number"
+                },
+                "quantity": {
+                    "description": "quantity",
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "sanctum": {
+            "type": "apiKey",
+            "description": "Bearer",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
