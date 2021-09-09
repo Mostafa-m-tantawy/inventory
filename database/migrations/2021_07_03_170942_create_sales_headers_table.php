@@ -23,9 +23,10 @@ class CreateSalesHeadersTable extends Migration
         });
         Schema::create('cooked_products', function (Blueprint $table) {
 
-
-            $table->foreign('order_details_id')->references('id')->on('order_details')->onDelete('cascade');;
-
+            $table->foreign('order_details_id')
+                ->references('id')
+                ->on('order_details')
+                ->onDelete('cascade');
 
         });
 
