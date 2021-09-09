@@ -28,7 +28,6 @@ class CreateCookedProductsTable extends Migration
             $table->double('unit_cost')->nullable();;
             $table->timestamps();
 
-            $table->foreign('order_details_id')->references('id')->on('order_details')->onDelete('cascade');;
 
 
         });
