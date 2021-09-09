@@ -21,7 +21,7 @@ class CreateSalesHeadersTable extends Migration
             $table->date('math_end_date')->nullable();
             $table->timestamps();
         });
-        Schema::create('cooked_products', function (Blueprint $table) {
+        Schema::table('cooked_products', function (Blueprint $table) {
 
             $table->foreign('order_details_id')
                 ->references('id')
