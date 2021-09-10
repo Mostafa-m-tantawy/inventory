@@ -12,9 +12,7 @@ class categoriesSeeder extends Seeder
      */
     public function run()
     {
-        $center = [
-            ['name' => 'سموحة', 'store_id' => 1,'created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()],
-        ];
+
 
         $departments = [
             ['name' => 'مطبخ', 'store_id' => 1, 'center_id' => '1','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()],
@@ -37,7 +35,6 @@ class categoriesSeeder extends Seeder
         ];
 
 
-        DB::table('centers')->insert($center);
         DB::table('departments')->insert($departments);
         DB::table('product_categories')->insert($productcategories);
         DB::table('units')->insert($units);
