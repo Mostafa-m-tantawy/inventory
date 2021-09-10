@@ -30,7 +30,7 @@
                     <div class="form-group">
                         <label for="username">{{trans('main.Email')}}</label>
                         <input class="form-control" type="email" required placeholder="{{trans('main.Email')}}"
-                               name="email">
+                               name="email" value="demo@recipe.com">
 
                         @error('email')
                         <span class="invalid-feedback" role="alert">
@@ -43,7 +43,7 @@
                     <div class="form-group">
                         <label for="userpassword">{{trans('main.Password')}}</label>
                         <input class="form-control form-control-last" required type="Password"
-                               placeholder="{{trans('main.Password')}}" name="password">
+                               placeholder="{{trans('main.Password')}}" name="password" value="123456">
 
                         @error('password')
                         <span class="invalid-feedback" role="alert">
