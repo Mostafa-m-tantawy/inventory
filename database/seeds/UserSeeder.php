@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\hr\HrEmployee;
 use App\PackageRestaurant;
 use App\Models\inventory\Store;
-use App\Models\conf\SystemConf;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -43,33 +41,33 @@ class UserSeeder extends Seeder
 
 
 
-        SystemConf::create(['store_id' => 1,
+        \App\Models\conf\Systemconf::create(['store_id' => 1,
             'name' => 'name', 'value' => 'Demo','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-         SystemConf::create(['store_id' => 1,
+         \App\Models\conf\Systemconf::create(['store_id' => 1,
                     'name' => 'phone', 'value' => '','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
-         SystemConf::create(['store_id' => 1,
+         \App\Models\conf\Systemconf::create(['store_id' => 1,
                     'name' => 'mobile', 'value' => '','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-        SystemConf::create(['store_id' => 1,
+        \App\Models\conf\Systemconf::create(['store_id' => 1,
             'name' => 'logo', 'value' => 'images/no_image.png','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-        SystemConf::create(['store_id' => 1,
+        \App\Models\conf\Systemconf::create(['store_id' => 1,
             'name' => 'service', 'value' => '12','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-        SystemConf::create(['store_id' => 1,
+        \App\Models\conf\Systemconf::create(['store_id' => 1,
             'name' => 'vat', 'value' => '14','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-        SystemConf::create(['store_id' => 1,
+        \App\Models\conf\Systemconf::create(['store_id' => 1,
             'name' => 'method', 'value' => 'avg_cost','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
 
-        SystemConf::create(
+        \App\Models\conf\Systemconf::create(
             ['store_id' => 1,
                 'name' => 'months', 'value' => '6','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
-        SystemConf::create(
+        \App\Models\conf\Systemconf::create(
             ['store_id' => 1,
                 'name' => 'delivery', 'value' => '0','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
-        SystemConf::create(
+        \App\Models\conf\Systemconf::create(
             ['store_id' => 1,
                 'name' => 'POS check Dish Quantity', 'value' => '1','created_at'=>\Carbon\Carbon::now(),'updated_at'=>\Carbon\Carbon::now()]);
     }
